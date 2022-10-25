@@ -7,6 +7,10 @@ export class SearchHeaderPage {
         return this.getSearchHeader().find('.bt-favorites-mode-toggle');
     }
 
+    public clickFavoritesToggleBtn(): void {
+        this.getFavoritesToggleBtn().click({force: true});
+    }
+
     public getFavoritesCountText(): Cypress.Chainable<string> {
         return this.getSearchHeader().find('.bt-favorites-link__count').invoke('text');
     }

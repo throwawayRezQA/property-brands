@@ -1,3 +1,4 @@
+import { ErrorMessagesConstants } from "../support/constants";
 import { ResultListPage, SearchHeaderPage } from "../support/page-objects";
 
 const resultListPage = new ResultListPage();
@@ -8,6 +9,7 @@ describe('Tests related to the favorite functionality', () => {
     sessionStorage.clear();
     localStorage.clear();
     cy.logIn();
+    resultListPage.waitUntilSomeResultsAreLoaded();
   });
 
   it('[FAV-01]: Each property tile contains a Favorite on/off button which is OFF by default', () => {
@@ -41,7 +43,7 @@ describe('Tests related to the favorite functionality', () => {
 
   it('[FAV-04]: Ticking/unticking properties as favorites properly increases/decreases the favorite counter', () => {
     const verifyFavoriteCounterIncrementsProperly = (currentFavoritedAmount: number, propertyTilesToTickAsFavorite: JQuery<HTMLElement>) => {
-      for (let i = 0 ; i < propertyTilesToTickAsFavorite.length ; i++) {
+      for (let i = 0; i < propertyTilesToTickAsFavorite.length; i++) {
         resultListPage.clickFavoriteBtnOfSpecificPropertyTile(propertyTilesToTickAsFavorite.eq(i)).then(() => {
           currentFavoritedAmount++;
           searchHeaderPage.getFavoritesCountRawNumber().then(uiFavoritedCounter => {
@@ -50,9 +52,9 @@ describe('Tests related to the favorite functionality', () => {
         });
       }
     }
-  
+
     const verifyFavoriteCounterDecrementsProperly = (currentFavoritedAmount: number, propertyTilesToUntickAsFavorite: JQuery<HTMLElement>) => {
-      for (let i = 0 ; i < propertyTilesToUntickAsFavorite.length ; i++) {
+      for (let i = 0; i < propertyTilesToUntickAsFavorite.length; i++) {
         resultListPage.clickFavoriteBtnOfSpecificPropertyTile(propertyTilesToUntickAsFavorite.eq(i)).then(() => {
           currentFavoritedAmount--;
           searchHeaderPage.getFavoritesCountRawNumber().then(uiFavoritedCounter => {
@@ -64,14 +66,18 @@ describe('Tests related to the favorite functionality', () => {
 
     const initialFavoritedCount = 0;
     resultListPage.getAllDisplayedPropertyTiles().then((tiles) => {
-      if(tiles.length === 0) {
-        throw new Error('There are no tiles displayed in the UI!');
-      }
-
       const testedTiles = tiles.slice(0, 10); // only checking up to 10 tiles.
 
       verifyFavoriteCounterIncrementsProperly(initialFavoritedCount, testedTiles);
       verifyFavoriteCounterDecrementsProperly(testedTiles.length, testedTiles);
     });
+  });
+
+  it('[FAV-05]: Clicking on the favorite indicator button when there are no favorited properties displays a specific message', () => {
+    searchHeaderPage.clickFavoritesToggleBtn();
+    resultListPage.getResultCountRawNumber().then(resultCount => expect(resultCount).to.eq(0));
+    resultListPage.getLackOfResultList().should('be.visible')
+      .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_1)
+      .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_2);
   });
 });
