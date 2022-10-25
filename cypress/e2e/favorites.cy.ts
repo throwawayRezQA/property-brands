@@ -1,6 +1,7 @@
-import { ResultListPage } from "../support/page-objects";
+import { ResultListPage, SearchHeaderPage } from "../support/page-objects";
 
 const resultListPage = new ResultListPage();
+const searchHeaderPage = new SearchHeaderPage();
 
 describe('Tests related to the favorite functionality', () => {
   beforeEach(() => {
@@ -17,5 +18,11 @@ describe('Tests related to the favorite functionality', () => {
         cy.wrap(btn).should('have.attr', 'aria-checked').and('equal', 'false');
       });
     });
+  });
+
+  it('[FAV-02]: Hub contains a proper indicator of the number of favorited properties and is set to 0 by default', () => {
+    searchHeaderPage.getFavoritesLinkIcon().should('be.visible').and('have.css', 'fill', 'rgb(255, 83, 83)');
+    
+    searchHeaderPage.getFavoritesCountRawNumber().then(defaultFavoriteCount => expect(defaultFavoriteCount).to.eq(0));
   });
 });
