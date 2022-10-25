@@ -122,4 +122,40 @@ describe('Tests related to the favorite functionality', () => {
       })
     });
   });
+
+  it('[FAV-07]: Properties can be removed from the favorite view', () => {
+    resultListPage.clickFavoriteBtnOfSpecificPropertyTile(resultListPage.getPropertyTileByIndex(0));
+    searchHeaderPage.clickFavoritesToggleBtn();
+    resultListPage.waitUntilSomeResultsAreLoaded();
+    resultListPage.getResultCountRawNumber().then(favoriteCount => expect(favoriteCount).to.eq(1));
+
+    resultListPage.clickFavoriteBtnOfSpecificPropertyTile(resultListPage.getPropertyTileByIndex(0));
+    resultListPage.getResultCountRawNumber().then(favoriteCount => expect(favoriteCount).to.eq(0));
+    resultListPage.getLackOfResultList().should('be.visible')
+      .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_1)
+      .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_2);
+  });
+
+  it('[FAV-08]: User can return from the favorite view into the regular view. The amount of results is kept the same', () => {
+    resultListPage.getResultCountRawNumber().then(countBeforeMovingToFavoriteView => {
+      searchHeaderPage.clickFavoritesToggleBtn();
+      resultListPage.getLackOfResultList().should('be.visible');
+      searchHeaderPage.clickFavoritesToggleBtn();
+      resultListPage.waitUntilSomeResultsAreLoaded();
+      resultListPage.getResultCountRawNumber().then(countAfterReturningFromFavoriteView => {
+        expect(countBeforeMovingToFavoriteView).to.eq(countAfterReturningFromFavoriteView);
+      });
+    });
+  });
+
+  it('[FAV-09]: Favorited properties remain favorited after page refresh', () => {
+    resultListPage.clickFavoriteBtnOfSpecificPropertyTile(resultListPage.getPropertyTileByIndex(0));
+    searchHeaderPage.clickFavoritesToggleBtn();
+    resultListPage.waitUntilSomeResultsAreLoaded();
+    resultListPage.getResultCountRawNumber().then(favoriteCount => expect(favoriteCount).to.eq(1));
+
+    cy.reload();
+    resultListPage.waitUntilSomeResultsAreLoaded();
+    resultListPage.getResultCountRawNumber().then(favoriteCount => expect(favoriteCount).to.eq(1));
+  });
 });
