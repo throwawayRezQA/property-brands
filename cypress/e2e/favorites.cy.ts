@@ -1,5 +1,5 @@
 import { ErrorMessagesConstants } from "../support/constants";
-import { ResultListPage, SearchHeaderPage } from "../support/page-objects";
+import { ResultListPage, SearchHeaderPage, TileDetails } from "../support/page-objects";
 
 const resultListPage = new ResultListPage();
 const searchHeaderPage = new SearchHeaderPage();
@@ -79,5 +79,47 @@ describe('Tests related to the favorite functionality', () => {
     resultListPage.getLackOfResultList().should('be.visible')
       .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_1)
       .and('contain', ErrorMessagesConstants.EMPTY_FAVORITES_ERROR_MSG_2);
+  });
+
+  it('[FAV-06]: Clicking on the favorite indicator only displays the favorited properties', () => {
+    const numberOfTilesToFavorite = 2; 
+    
+    resultListPage.getAllDisplayedPropertyTiles().then((tiles) => {
+      if (tiles.length <= numberOfTilesToFavorite + 1) { // at least three tiles needed. Two will be marked as favorites and one will remain as not favorite
+        throw new Error('There are too few available records to execute this test fully!')
+      }
+      const tilesToMarkAsFavorite = tiles.slice(0, numberOfTilesToFavorite);
+      
+      const tileDetailsBeforeFavoriting: TileDetails[] = [];
+      for(let i = 0 ; i < tilesToMarkAsFavorite.length ; i ++) {
+        const currentTile = tilesToMarkAsFavorite.eq(i);
+        resultListPage.getDetailsOfSpecificPropertyTile(currentTile).then(details => {
+          tileDetailsBeforeFavoriting.push(details);
+          resultListPage.clickFavoriteBtnOfSpecificPropertyTile(currentTile);
+          cy.wrap(tileDetailsBeforeFavoriting).as('tilesWhichShouldBeDisplayedInFavoritedView');
+        });
+      }
+
+      searchHeaderPage.clickFavoritesToggleBtn();
+      resultListPage.waitUntilSomeResultsAreLoaded();
+      resultListPage.getResultCountRawNumber().then(numberOfTilesDisplayedInFavoritedView => expect(numberOfTilesDisplayedInFavoritedView).to.eq(numberOfTilesToFavorite));
+
+      resultListPage.getAllDisplayedPropertyTiles().then((favoritedTiles) => {
+        const tileDetailsAfterFavoriting: TileDetails[] = [];
+        for(let i = 0 ; i < favoritedTiles.length ; i ++) {
+          const currentTile = favoritedTiles.eq(i);
+          resultListPage.getDetailsOfSpecificPropertyTile(currentTile).then(details => {
+            tileDetailsAfterFavoriting.push(details);
+            cy.wrap(tileDetailsAfterFavoriting).as('tilesWhichAreDisplayedInFavoritedView');
+          })
+        }
+      });
+
+      cy.get('@tilesWhichShouldBeDisplayedInFavoritedView').then(tilesWhichShouldBeDisplayedInFavoritedView => {
+        cy.get('@tilesWhichAreDisplayedInFavoritedView').then(tilesWhichAreDisplayedInFavoritedView => {
+          expect(tilesWhichAreDisplayedInFavoritedView).to.deep.eq(tilesWhichShouldBeDisplayedInFavoritedView);
+        })
+      })
+    });
   });
 });

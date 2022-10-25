@@ -2,6 +2,11 @@ import { StringUtils } from "../utils";
 
 const stringUtils = new StringUtils();
 
+export interface TileDetails {
+    propertyName: string;
+    propertyInfo: string;
+}
+
 export class ResultListPage {
     public getAllDisplayedPropertyTiles(): Cypress.Chainable<JQuery<HTMLElement>> {
         return this.getResultList().find('.bt-teaser');
@@ -27,6 +32,19 @@ export class ResultListPage {
 
     public waitUntilSomeResultsAreLoaded(): void {
         this.getAllDisplayedPropertyTiles().then(tiles => expect(tiles.length).to.be.gte(1));
+    }
+
+    public getDetailsOfSpecificPropertyTile(tile: JQuery<HTMLElement>): Cypress.Chainable<TileDetails> {
+        return cy.wrap(tile.find('.bt-teaser__link')).invoke('text').then(propertyName => {
+            return cy.wrap(tile.find('.bt-teaser__info')).invoke('text').then(propertyInfo => {
+                const details: TileDetails = {
+                    propertyName,
+                    propertyInfo,
+                }
+
+                return details;
+            });
+        });
     }
 
     private getResultCountText(): Cypress.Chainable<string> {
