@@ -14,7 +14,7 @@ describe('Tests related to the favorite functionality', () => {
 
   it('[FAV-01]: Each property tile contains a Favorite on/off button which is OFF by default', () => {
     resultListPage.getAllDisplayedPropertyTiles().each((tile) => {
-      resultListPage.getFavoriteBtnOfSpecificPropertyTile(tile).then(btn => {
+      resultListPage.getFavoriteBtnOfSpecificPropertyTile(cy.wrap(tile)).then(btn => {
         expect(btn.length).to.eq(1);
         expect(btn).to.be.visible;
         cy.wrap(btn).should('have.attr', 'aria-checked').and('equal', 'false');
@@ -30,10 +30,10 @@ describe('Tests related to the favorite functionality', () => {
 
   it('[FAV-03]: Clicking the heart icon on the property tile correctly ticks the icon', () => {
     resultListPage.getAllDisplayedPropertyTiles().then(tiles => {
-      const testedTile = tiles.eq(0);
-      resultListPage.clickFavoriteBtnOfSpecificPropertyTile(testedTile);
+      const testedTile = tiles[0];
+      resultListPage.clickFavoriteBtnOfSpecificPropertyTile(cy.wrap(testedTile));
 
-      resultListPage.getFavoriteBtnOfSpecificPropertyTile(testedTile).then(btn => {
+      resultListPage.getFavoriteBtnOfSpecificPropertyTile(cy.wrap(testedTile)).then(btn => {
         expect(btn.length).to.eq(1);
         expect(btn).to.be.visible;
         cy.wrap(btn).should('have.attr', 'aria-checked').and('equal', 'true');
@@ -44,7 +44,7 @@ describe('Tests related to the favorite functionality', () => {
   it('[FAV-04]: Ticking/unticking properties as favorites properly increases/decreases the favorite counter', () => {
     const verifyFavoriteCounterIncrementsProperly = (currentFavoritedAmount: number, propertyTilesToTickAsFavorite: JQuery<HTMLElement>) => {
       for (let i = 0; i < propertyTilesToTickAsFavorite.length; i++) {
-        resultListPage.clickFavoriteBtnOfSpecificPropertyTile(propertyTilesToTickAsFavorite.eq(i)).then(() => {
+        resultListPage.clickFavoriteBtnOfSpecificPropertyTile(cy.wrap(propertyTilesToTickAsFavorite[i])).then(() => {
           currentFavoritedAmount++;
           searchHeaderPage.getFavoritesCountRawNumber().then(uiFavoritedCounter => {
             expect(uiFavoritedCounter).to.eq(currentFavoritedAmount);
@@ -55,7 +55,7 @@ describe('Tests related to the favorite functionality', () => {
 
     const verifyFavoriteCounterDecrementsProperly = (currentFavoritedAmount: number, propertyTilesToUntickAsFavorite: JQuery<HTMLElement>) => {
       for (let i = 0; i < propertyTilesToUntickAsFavorite.length; i++) {
-        resultListPage.clickFavoriteBtnOfSpecificPropertyTile(propertyTilesToUntickAsFavorite.eq(i)).then(() => {
+        resultListPage.clickFavoriteBtnOfSpecificPropertyTile(cy.wrap(propertyTilesToUntickAsFavorite.eq(i))).then(() => {
           currentFavoritedAmount--;
           searchHeaderPage.getFavoritesCountRawNumber().then(uiFavoritedCounter => {
             expect(uiFavoritedCounter).to.eq(currentFavoritedAmount);
@@ -95,7 +95,7 @@ describe('Tests related to the favorite functionality', () => {
         const currentTile = tilesToMarkAsFavorite.eq(i);
         resultListPage.getDetailsOfSpecificPropertyTile(currentTile).then(details => {
           tileDetailsBeforeFavoriting.push(details);
-          resultListPage.clickFavoriteBtnOfSpecificPropertyTile(currentTile);
+          resultListPage.clickFavoriteBtnOfSpecificPropertyTile(cy.wrap(currentTile));
           cy.wrap(tileDetailsBeforeFavoriting).as('tilesWhichShouldBeDisplayedInFavoritedView');
         });
       }

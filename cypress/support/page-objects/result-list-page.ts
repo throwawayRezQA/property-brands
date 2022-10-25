@@ -12,11 +12,15 @@ export class ResultListPage {
         return this.getResultList().find('.bt-teaser');
     }
 
-    public getFavoriteBtnOfSpecificPropertyTile(tile: JQuery<HTMLElement>): Cypress.Chainable<JQuery<HTMLElement>> {
-        return cy.wrap(tile.find('[type="button"][class*="bt-favorite"]'));
+    public getPropertyTileByIndex(index:number): Cypress.Chainable<JQuery<HTMLElement>> {
+        return this.getAllDisplayedPropertyTiles().eq(index);
     }
 
-    public clickFavoriteBtnOfSpecificPropertyTile(tile: JQuery<HTMLElement>): Cypress.Chainable<JQuery<HTMLElement>> {
+    public getFavoriteBtnOfSpecificPropertyTile(tile: Cypress.Chainable<JQuery<HTMLElement>>): Cypress.Chainable<JQuery<HTMLElement>> {
+        return tile.find('[type="button"][class*="bt-favorite"]');
+    }
+
+    public clickFavoriteBtnOfSpecificPropertyTile(tile: Cypress.Chainable<JQuery<HTMLElement>>): Cypress.Chainable<JQuery<HTMLElement>> {
         return this.getFavoriteBtnOfSpecificPropertyTile(tile).click();
     }
 
