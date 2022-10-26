@@ -9,6 +9,7 @@ $ npm i -g yarn
 
 To run cypress, you need to have the proper dependencies installed. To do so:
 $ apt update
+
 $ apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 In case of running cypress on WSL2, you also need to follow those steps:
