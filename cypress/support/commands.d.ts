@@ -1,5 +1,5 @@
 declare namespace Cypress {
-    interface Chainable<> {
-        logIn(): Cypress.Chainable;
-    }
+	interface Chainable<> {
+		logIn(): Cypress.Chainable;
+	}
 }
