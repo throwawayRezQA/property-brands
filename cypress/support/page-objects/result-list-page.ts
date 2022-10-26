@@ -56,6 +56,6 @@ export class ResultListPage {
 	}
 
 	private getResultList(): Cypress.Chainable<JQuery<HTMLElement>> {
-		return cy.get('.bt-results-list');
+		return cy.get('.bt-results-list', { timeout: 10000 });
 	}
 }
