@@ -35,5 +35,5 @@ $ npx cypress open
 To run all cypress scripts:
 $ npx cypress run
 
-To run specific script:
-$ npx cypress run --spec <path-to-spec>
+To run specific suite:
+$ npx cypress run --spec path-to-spec
