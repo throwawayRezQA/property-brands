@@ -8,8 +8,9 @@ describe('Tests related to the favorite functionality', () => {
   beforeEach(() => {
     sessionStorage.clear();
     localStorage.clear();
-    cy.logIn();
-    resultListPage.waitUntilSomeResultsAreLoaded();
+    cy.logIn().then(() => {
+      resultListPage.waitUntilSomeResultsAreLoaded();
+    });
   });
 
   it('[FAV-01]: Each property tile contains a Favorite on/off button which is OFF by default', () => {
@@ -82,16 +83,16 @@ describe('Tests related to the favorite functionality', () => {
   });
 
   it('[FAV-06]: Clicking on the favorite indicator only displays the favorited properties', () => {
-    const numberOfTilesToFavorite = 2; 
-    
+    const numberOfTilesToFavorite = 2;
+
     resultListPage.getAllDisplayedPropertyTiles().then((tiles) => {
       if (tiles.length <= numberOfTilesToFavorite + 1) { // at least three tiles needed. Two will be marked as favorites and one will remain as not favorite
         throw new Error('There are too few available records to execute this test fully!')
       }
       const tilesToMarkAsFavorite = tiles.slice(0, numberOfTilesToFavorite);
-      
+
       const tileDetailsBeforeFavoriting: TileDetails[] = [];
-      for(let i = 0 ; i < tilesToMarkAsFavorite.length ; i ++) {
+      for (let i = 0; i < tilesToMarkAsFavorite.length; i++) {
         const currentTile = tilesToMarkAsFavorite.eq(i);
         resultListPage.getDetailsOfSpecificPropertyTile(currentTile).then(details => {
           tileDetailsBeforeFavoriting.push(details);
@@ -106,7 +107,7 @@ describe('Tests related to the favorite functionality', () => {
 
       resultListPage.getAllDisplayedPropertyTiles().then((favoritedTiles) => {
         const tileDetailsAfterFavoriting: TileDetails[] = [];
-        for(let i = 0 ; i < favoritedTiles.length ; i ++) {
+        for (let i = 0; i < favoritedTiles.length; i++) {
           const currentTile = favoritedTiles.eq(i);
           resultListPage.getDetailsOfSpecificPropertyTile(currentTile).then(details => {
             tileDetailsAfterFavoriting.push(details);

@@ -1,5 +1,5 @@
 export class StringUtils {
-    public removeAllNonNumericalCharacters(stringToModify: string): string {
-        return stringToModify.replace(/\D/g, '');
-    }
+	public removeAllNonNumericalCharacters(stringToModify: string): string {
+		return stringToModify.replace(/\D/g, '');
+	}
 }
