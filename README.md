@@ -16,10 +16,14 @@ $ apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 l
 In case of running cypress on WSL2, you also need to follow those steps:
 1. Install VcXsrv Windows X Server
 2. Open .bashrc (or equivalent such as .zshrc) and set the DISPLAY environment variable by adding the following:
+
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
 sudo /etc/init.d/dbus start &> /dev/null
+
 3. Close .bashrc. Now linux user needs to be granted access to dbus without a password. Execute the following command:
+
 $ sudo visudo -f /etc/sudoers.d/dbus
+
 4. In the editor that launches, add the following line with your username:
 <your_username> ALL = (root) NOPASSWD: /etc/init.d/dbus
 5. Make sure the Windows firewall is opened for VcxSrv - the firewall prompt should be displayed after the first `cypress open` command run
