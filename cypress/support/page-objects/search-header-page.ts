@@ -25,6 +25,14 @@ export class SearchHeaderPage {
         return this.getSearchHeader().find('.bt-favorites-link__icon');
     }
 
+    public clickFiltersBtn(): void {
+        this.getFiltersBtn().click({force: true});
+    }
+
+    private getFiltersBtn(): Cypress.Chainable<JQuery<HTMLElement>> {
+        return this.getSearchHeader().find('.bt-modal-toggle--filters');
+    }
+
     private getSearchHeader(): Cypress.Chainable<JQuery<HTMLElement>> {
         return cy.get('.bt-search__header');
     }
