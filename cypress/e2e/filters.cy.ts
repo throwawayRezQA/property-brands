@@ -1,5 +1,5 @@
-import { ErrorMessagesConstants } from "../support/constants";
-import { CookieBannerPage, FiltersModalPage, ResultListPage, SearchHeaderPage, TileDetails } from "../support/page-objects";
+import { DefaultValuesConstants, ErrorMessagesConstants } from "../support/constants";
+import { CookieBannerPage, FiltersModalPage, ResultListPage, SearchHeaderPage } from "../support/page-objects";
 
 const cookieBannerPage = new CookieBannerPage();
 const filtersModalPage = new FiltersModalPage();
@@ -67,7 +67,7 @@ describe('Tests related to filtering the result list', () => {
       const allProperties: Property[] = dataForFiltering as unknown as Property[];
       const beds: number[] = [];
       allProperties.forEach(property => {
-        if(property.beds !== undefined) {
+        if (property.beds !== undefined) {
           beds.push(property.beds);
         }
       });
@@ -83,7 +83,7 @@ describe('Tests related to filtering the result list', () => {
       openAndClearFilters();
       setBedroomsFilterToSpecificValue(lowestBedAmountOfAllResults + 1);
       clickViewResultsAndMakeSureResultsAreLoaded();
-      const propertiesHavingMoreBedsThanMin: Property[] = allProperties.filter(properties => properties.beds > lowestBedAmountOfAllResults);   
+      const propertiesHavingMoreBedsThanMin: Property[] = allProperties.filter(properties => properties.beds > lowestBedAmountOfAllResults);
       getUIresultCountAndVerifyItIsEqualTo(propertiesHavingMoreBedsThanMin.length);
 
       openAndClearFilters();
@@ -98,16 +98,36 @@ describe('Tests related to filtering the result list', () => {
       resultListPage.getLackOfResultList().should('be.visible').and('contain', ErrorMessagesConstants.EMPTY_FILTER_RESULTS_ERROR_MSG);
     });
   });
+
+  it('[FILTER-02]: 0 is the default and lowest value that can be selected within the bedrooms filter', () => {
+    searchHeaderPage.clickFiltersBtn();
+    filtersModalPage.getCurrentValueOfMinimumBedroomsFilter().then(value => {
+      expect(value).to.eq(DefaultValuesConstants.MIN_BEDROOMS_FILTER_DEFAULT_VALUE);
+    });
+
+    filtersModalPage.clickDecreaseMinimumBedroomsBtn();
+    filtersModalPage.getCurrentValueOfMinimumBedroomsFilter().then(value => {
+      expect(value).to.eq(DefaultValuesConstants.MIN_BEDROOMS_FILTER_DEFAULT_VALUE);
+    });
+  });
+
+  it('[FILTER-03]: CLEAR FILTERS button resets the bedrooms filter to 0', () => {
+    searchHeaderPage.clickFiltersBtn();
+    filtersModalPage.clickIncreaseMinimumBedroomsBtn()
+    filtersModalPage.getCurrentValueOfMinimumBedroomsFilter().then(value => {
+      expect(value).to.be.gt(DefaultValuesConstants.MIN_BEDROOMS_FILTER_DEFAULT_VALUE);
+    });
+
+    filtersModalPage.clickDecreaseMinimumBedroomsBtn();
+    filtersModalPage.getCurrentValueOfMinimumBedroomsFilter().then(value => {
+      expect(value).to.eq(DefaultValuesConstants.MIN_BEDROOMS_FILTER_DEFAULT_VALUE);
+    });
+  });
+
+  it('[FILTER-04]: Pressing the FILTERS button opens the filter modal page. Pressing VIEW RESULTS closes it.', () => {
+    searchHeaderPage.clickFiltersBtn();
+    filtersModalPage.getFiltersModal().should('be.visible');
+    filtersModalPage.clickViewResultsBtn();
+    filtersModalPage.getFiltersModal().should('not.exist');
+  });
 });
-
-/**
- * As a user I want the ability to filter properties based on the number of bedrooms and bathrooms.
-
-Acceptance Criteria:
-
-The Filters selection should allow the user to select the number of either bedrooms and/or bathrooms.
-The selection should limit the value to an integer with a lower value of 0 (zero).
-The Clear Filters button should reset both filters to their lower value.
-The View Results button should close the Filter Results page and display properties on the hub meeting the criteria.
- */
-
